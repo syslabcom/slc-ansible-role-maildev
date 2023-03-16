@@ -10,6 +10,6 @@
         name: "slc-ansible-role-maildev"
       vars:
         - maildev_installation_folder: "{{ ansible_env.HOME }}/maildev_customized"
-        - maildev_install_cronjob: true
+        - maildev_install_cronjob: false
         - maildev_password: foo
         - maildev_base_pathname: /maildev
