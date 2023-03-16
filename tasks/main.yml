@@ -1,7 +1,7 @@
 ---
 # tasks file for slc_ansible_role_maildev
 - name: Check if we are in a flying circus VM
-  command: which fc-manage
+  ansible.builtin.command: which fc-manage
   register: is_flyingcircus
   failed_when:
     - is_flyingcircus.rc not in [0, 1]
@@ -12,7 +12,7 @@
    - always
 
 - name: Clone maildev buildout
-  git:
+  ansible.builtin.git:
     repo: https://github.com/ale-rt/buildout.maildev.git
     dest: "{{ maildev_installation_folder }}"
   tags:
@@ -20,7 +20,7 @@
    - maildev
 
 - name: Set up buildouts custom file
-  template:
+  ansible.builtin.template:
     src: "templates/custom.cfg"
     dest: "{{ maildev_installation_folder }}"
     backup: yes
@@ -30,14 +30,14 @@
    - maildev
 
 - name: Build the default target
-  make:
+  ansible.builtin.make:
     chdir: "{{ maildev_installation_folder }}"
   tags:
    - build
    - maildev
 
 - name: Add cron job to maildev at boot time
-  cron:
+  ansible.builtin.cron:
     name: "Start maildev at boot"
     special_time: reboot
     job: "{{ maildev_installation_folder }}/bin/supervisord"
