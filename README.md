@@ -16,24 +16,47 @@ Having ansible installed should be just fine :).
 Role Variables
 --------------
 
-<!-- A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well. -->
-...
+The available variables are stored in `defaults/main.yml`:
+
+```shell
+$ cat defaults/main.yml
+---
+# defaults file for slc_ansible_role_maildev
+maildev_installation_folder: "{{ ansible_env.HOME }}/maildev"
+maildev_install_cronjob: true
+maildev_password:
+maildev_base_pathname:
+```
 
 Dependencies
 ------------
 
-<!-- A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles. -->
-...
+This module has no dependencies.
 
 Example Playbook
 ----------------
 
-<!-- Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- name: Install Maildev
+  hosts: localhost
+  connection: local
+  roles:
+    - role: MailDev
+  vars:
+    - maildev_installation_folder: "{{ ansible_env.HOME }}/Code/buildouts/buildout.maildev"
+```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 } -->
-...
+Include this role with ansible-galaxy:
+
+```shell
+$ cat requirements.yml
+roles:
+  - name: MailDev
+    src: https://github.com/syslabcom/slc-ansible-role-maildev
+    version: main
+```
+
+Then run `ansible-galaxy install -r requirements.yml`.
 
 License
 -------
