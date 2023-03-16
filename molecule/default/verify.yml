@@ -1,0 +1,19 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+  - name: "Check the status of /root/maildev/bin/supervisord exists"
+    ansible.builtin.stat:
+      path: /root/maildev/bin/supervisord
+    register: file
+  - name: "Assert that the file /root/maildev/bin/supervisord exists"
+    ansible.builtin.assert:
+      that: file.stat.exists
+  - name: "Check the status of /root/maildev_customized/bin/supervisord exists"
+    ansible.builtin.stat:
+      path: /root/maildev/bin/supervisord
+    register: file
+  - name: "Assert that the file /root/maildev_customized/bin/supervisord exists"
+    ansible.builtin.assert:
+      that: file.stat.exists

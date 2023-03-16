@@ -1,0 +1,15 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include slc-ansible-role-maildev"
+      ansible.builtin.include_role:
+        name: "slc-ansible-role-maildev"
+    - name: "Include slc-ansible-role-maildev and set some variables"
+      ansible.builtin.include_role:
+        name: "slc-ansible-role-maildev"
+      vars:
+        - maildev_installation_folder: "{{ ansible_env.HOME }}/maildev_customized"
+        - maildev_install_cronjob: true
+        - maildev_password: foo
+        - maildev_base_pathname: /maildev
