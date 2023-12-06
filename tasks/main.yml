@@ -40,7 +40,7 @@
   ansible.builtin.cron:
     name: "Start maildev at boot"
     special_time: reboot
-    job: "{{ maildev_installation_folder }}/bin/supervisord"
+    job: "{{ maildev_installation_folder }}/bin/supervisorctl status >/dev/null || {{ maildev_installation_folder }}/bin/supervisord"
   tags:
     - supervisor
     - crontab
