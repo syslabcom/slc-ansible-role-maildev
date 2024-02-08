@@ -30,7 +30,7 @@
    - maildev
 
 - name: Build the default target
-  ansible.builtin.make:
+  community.general.make:
     chdir: "{{ maildev_installation_folder }}"
   tags:
    - build
