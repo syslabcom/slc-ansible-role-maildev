@@ -25,6 +25,7 @@ $ cat defaults/main.yml
 maildev_installation_folder: "{{ ansible_env.HOME }}/maildev"
 maildev_install_cronjob: true
 maildev_password:
+maildev_username: "admin"
 maildev_base_pathname:
 ```
 
