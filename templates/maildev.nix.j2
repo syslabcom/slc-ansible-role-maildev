@@ -1,0 +1,13 @@
+{ lib, pkgs,  ... }:
+{
+    systemd.services.maildev = {
+        path = with pkgs; [ bash nodejs ];
+        after = [ "network.target" ];
+        wantedBy = [ "default.target" ];
+        serviceConfig = {
+            Description = "MailDev SMTP server";
+            User = "{{ ansible_env.USER }}";
+            ExecStart = "{{ ansible_env.HOME }}/.local/bin/maildev";
+        };
+    };
+}

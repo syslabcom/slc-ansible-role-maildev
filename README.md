@@ -22,7 +22,7 @@ The available variables are stored in `defaults/main.yml`:
 $ cat defaults/main.yml
 ---
 # defaults file for slc_ansible_role_maildev
-maildev_installation_folder: "{{ ansible_env.HOME }}/maildev"
+maildev_installation_folder: "{{ ansible_env.HOME }}/.local/bin"
 maildev_install_cronjob: true
 maildev_password:
 maildev_username: "admin"
@@ -44,7 +44,7 @@ Example Playbook
   roles:
     - role: MailDev
   vars:
-    - maildev_installation_folder: "{{ ansible_env.HOME }}/Code/buildouts/buildout.maildev"
+    - maildev_installation_folder: "{{ ansible_env.HOME }}/.local/bin"
 ```
 
 Include this role with ansible-galaxy:

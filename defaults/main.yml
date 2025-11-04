@@ -1,6 +1,6 @@
 ---
 # defaults file for slc_ansible_role_maildev
-maildev_installation_folder: "{{ ansible_env.HOME }}/maildev"
+maildev_installation_folder: "{{ ansible_env.HOME }}/.local/bin"
 maildev_install_cronjob: true
 maildev_password:
 maildev_username: admin
