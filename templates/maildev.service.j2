@@ -1,0 +1,12 @@
+[Unit]
+Description=MailDev SMTP server
+After=network.target
+
+[Service]
+ExecStart={{ maildev_installation_folder }}/maildev
+Restart=on-failure
+WorkingDirectory=%h
+Environment="PATH=%h/.local/bin:/usr/bin:/bin"
+
+[Install]
+WantedBy=default.target

@@ -1,2 +1,13 @@
 ---
 # handlers file for slc_ansible_role_maildev
+- name: Apply NixOS configuration changes
+  ansible.builtin.command: sudo fc-manage --build
+  tags:
+    - maildev
+
+- name: Reload systemd user daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: user
+  tags:
+    - systemd

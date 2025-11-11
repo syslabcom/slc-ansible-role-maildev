@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+export MAILDEV_SMTP_PORT="{{ maildev_smtp_port }}"
+export MAILDEV_WEB_PORT=8026
+export MAILDEV_WEB_USER="{{ maildev_username }}"
+export MAILDEV_WEB_PASS="{{ maildev_password }}"
+export MAILDEV_BASE_PATHNAME="{{ maildev_base_pathname }}"
+
+npx maildev

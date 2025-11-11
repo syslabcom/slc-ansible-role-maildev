@@ -1,49 +1,103 @@
 ---
 # tasks file for slc_ansible_role_maildev
 - name: Check if we are in a flying circus VM
-  ansible.builtin.command: which fc-manage
-  register: is_flyingcircus
-  failed_when:
-    - is_flyingcircus.rc not in [0, 1]
-  changed_when:
-    - False
+  block:
+    - name: Check if running in a Flying Circus VM
+      ansible.builtin.command: which fc-manage
+      register: fc_check
+      ignore_errors: true
+      failed_when: false
+      changed_when: false
+    - set_fact:
+        is_flyingcircus: "{{ (fc_check.rc == 0) | bool }}"
   tags:
-   - maildev
-   - always
-
-- name: Clone maildev buildout
-  ansible.builtin.git:
-    repo: https://github.com/ale-rt/buildout.maildev.git
-    dest: "{{ maildev_installation_folder }}"
-  tags:
-   - checkout
-   - maildev
-
-- name: Set up buildouts custom file
-  ansible.builtin.template:
-    src: "templates/custom.cfg"
-    dest: "{{ maildev_installation_folder }}"
-    backup: yes
-    mode: "600"
-  tags:
-   - configuration
-   - maildev
-
-- name: Build the default target
-  community.general.make:
-    chdir: "{{ maildev_installation_folder }}"
-  tags:
-   - build
-   - maildev
-
-- name: Add cron job to maildev at boot time
-  ansible.builtin.cron:
-    name: "Start maildev at boot"
-    special_time: reboot
-    job: "{{ maildev_installation_folder }}/bin/supervisorctl status >/dev/null || {{ maildev_installation_folder }}/bin/supervisord"
-  tags:
-    - supervisor
-    - crontab
     - maildev
-  when:
-    - maildev_install_cronjob
+    - always
+
+- name: Cleanup legacy maildev installation
+  block:
+    - name: Check for legacy $HOME/maildev directory
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/maildev"
+      register: maildev_legacy
+
+    - name: Stop legacy maildev supervisor processes
+      ansible.builtin.command: ./bin/supervisorctl shutdown
+      args:
+        chdir: "{{ ansible_env.HOME }}/maildev"
+      when: maildev_legacy.stat.exists and maildev_legacy.stat.isdir
+      failed_when: false
+      changed_when: true
+
+    - name: Remove legacy $HOME/maildev directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/maildev"
+        state: absent
+      when: maildev_legacy.stat.exists and maildev_legacy.stat.isdir
+  tags:
+    - maildev
+    - cleanup
+
+- name: Deploy maildev start script
+  block:
+    - name: Ensure the installation folder exists
+      ansible.builtin.file:
+        path: "{{ maildev_installation_folder }}"
+        state: directory
+        mode: '0700'
+
+    - name: Add maildev start script file (non-FC)
+      ansible.builtin.template:
+        src: maildev.j2
+        dest: "{{ maildev_installation_folder }}/maildev"
+        mode: '0700'
+      when: not is_flyingcircus | bool
+
+    - name: Add maildev start script file (FC)
+      ansible.builtin.template:
+        src: maildev.j2
+        dest: "{{ maildev_installation_folder }}/maildev"
+        mode: '0700'
+      notify: Apply NixOS configuration changes
+      when: is_flyingcircus | bool
+  tags:
+    - maildev
+
+- name: Add maildev.nix systemd configuration
+  ansible.builtin.template:
+    src: templates/maildev.nix.j2
+    dest: /etc/local/nixos/maildev.nix
+    mode: '0600'
+  notify: Apply NixOS configuration changes
+  when: is_flyingcircus
+  tags:
+    - maildev
+
+- name: Standard systemd service setup
+  block:
+    - name: Ensure the folder .config/systemd/user is present
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.config/systemd/user"
+        state: directory
+        mode: "0700"
+
+    - name: Install the maildev unit
+      ansible.builtin.template:
+        src: templates/maildev.service.j2
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/maildev.service"
+        mode: "0644"
+        backup: true
+      notify: Reload systemd user daemon
+    
+    # Reload systemd before enabling the service
+    - meta: flush_handlers
+
+    - name: Enable and start maildev service
+      ansible.builtin.systemd:
+        name: maildev.service
+        scope: user
+        enabled: true
+        state: started
+  when: not is_flyingcircus
+  tags:
+    - maildev
