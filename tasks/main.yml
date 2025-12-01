@@ -18,7 +18,7 @@
   block:
     - name: Check for legacy $HOME/maildev directory
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/maildev"
+        path: "{{ ansible_env.HOME }}/maildev/bin/supervisorctl"
       register: maildev_legacy
 
     - name: Stop legacy maildev supervisor processes
