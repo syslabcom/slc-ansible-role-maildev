@@ -5,3 +5,4 @@ maildev_install_cronjob: true
 maildev_password:
 maildev_username: admin
 maildev_base_pathname:
+maildev_smtp_port: 8025
