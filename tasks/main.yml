@@ -34,6 +34,13 @@
         path: "{{ ansible_env.HOME }}/maildev"
         state: absent
       when: maildev_legacy.stat.exists and maildev_legacy.stat.isdir
+
+    - name: Remove legacy "Start maildev at boot" cron job
+      ansible.builtin.cron:
+        name: "Start maildev at boot"
+        state: absent
+      when: maildev_legacy.stat.exists and maildev_legacy.stat.isdir
+
   tags:
     - maildev
     - cleanup
@@ -88,7 +95,7 @@
         mode: "0644"
         backup: true
       notify: Reload systemd user daemon
-    
+
     # Reload systemd before enabling the service
     - meta: flush_handlers
 

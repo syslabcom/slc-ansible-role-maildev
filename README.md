@@ -23,10 +23,10 @@ $ cat defaults/main.yml
 ---
 # defaults file for slc_ansible_role_maildev
 maildev_installation_folder: "{{ ansible_env.HOME }}/.local/bin"
-maildev_install_cronjob: true
 maildev_password:
-maildev_username: "admin"
+maildev_username: admin
 maildev_base_pathname:
+maildev_smtp_port: 8025
 ```
 
 Dependencies
