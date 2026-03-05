@@ -25,7 +25,7 @@
       ansible.builtin.command: ./bin/supervisorctl shutdown
       args:
         chdir: "{{ ansible_env.HOME }}/maildev"
-      when: maildev_legacy.stat.exists and maildev_legacy.stat.isdir
+      when: maildev_legacy.stat.exists
       failed_when: false
       changed_when: true
 
@@ -33,13 +33,13 @@
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/maildev"
         state: absent
-      when: maildev_legacy.stat.exists and maildev_legacy.stat.isdir
+      when: maildev_legacy.stat.exists
 
     - name: Remove legacy "Start maildev at boot" cron job
       ansible.builtin.cron:
         name: "Start maildev at boot"
         state: absent
-      when: maildev_legacy.stat.exists and maildev_legacy.stat.isdir
+      when: maildev_legacy.stat.exists
 
   tags:
     - maildev
