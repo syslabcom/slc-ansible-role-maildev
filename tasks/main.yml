@@ -14,6 +14,16 @@
     - maildev
     - always
 
+- name: Ensure npx is installed
+  ansible.builtin.package:
+    name: npm
+    state: present
+  become: true
+  become_user: root
+  when: not is_flyingcircus | bool
+  tags:
+    - maildev
+
 - name: Cleanup legacy maildev installation
   block:
     - name: Check for legacy $HOME/maildev directory
