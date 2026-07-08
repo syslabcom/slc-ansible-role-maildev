@@ -98,6 +98,16 @@
         state: directory
         mode: "0700"
 
+    - name: Enable Linger for maildev user
+      vars:
+        - ansible_become_user: root
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/loginctl
+          - enable-linger
+          - "maildev"
+        creates: "/var/lib/systemd/linger/maildev"
+
     - name: Install the maildev unit
       ansible.builtin.template:
         src: templates/maildev.service.j2
